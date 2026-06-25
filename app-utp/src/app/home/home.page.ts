@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RegistroApiService } from '../services/registro-api';
+import { Registro } from '../models/registro';
 
 @Component({
   selector: 'app-home',
@@ -19,9 +21,11 @@ export class HomePage {
     correo: ['', [Validators.required, Validators.email]],
     tipoApp: ['', Validators.required],
   });
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private api: RegistroApiService,
   ) {}
   get f() {
     return this.registroForm.controls;
@@ -44,6 +48,28 @@ export class HomePage {
     }
     this.router.navigate(['/detalle'], {
       queryParams: this.registroForm.value,
+    });
+  }
+
+  guardarEnNube() {
+    this.enviado = true;
+    this.limpiarMensajes();
+
+    if (this.registroForm.invalid) {
+      this.registroForm.markAllAsTouched();
+      return;
+    }
+
+    this.cargando = true;
+    const registro = this.registroForm.value as Registro;
+
+    this.api.guardarRegistro(registro).subscribe({
+      next: (resp) => {
+        this.mensaje = resp.mensaje || 'Registro guardado correctamente.';
+        this.router.navigate(['/detalle'], { queryParams: registro });
+      },
+      error: () => (this.error = 'No se pudo conectar con el endpoint.'),
+      complete: () => (this.cargando = false),
     });
   }
 

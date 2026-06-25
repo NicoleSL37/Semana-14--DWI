@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  apiBaseUrl: 'https://clase-api-registro-utp.onrender.com/api/registros'
+
 };
