@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,10 @@ export class HomePage {
     correo: ['', [Validators.required, Validators.email]],
     tipoApp: ['', Validators.required],
   });
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+  ) {}
   get f() {
     return this.registroForm.controls;
   }
@@ -26,5 +30,16 @@ export class HomePage {
       return;
     }
     console.log('Registro válido', this.registroForm.value);
+  }
+
+  continuarADetalle() {
+    this.enviado = true;
+    if (this.registroForm.invalid) {
+      this.registroForm.markAllAsTouched();
+      return;
+    }
+    this.router.navigate(['/detalle'], {
+      queryParams: this.registroForm.value,
+    });
   }
 }
